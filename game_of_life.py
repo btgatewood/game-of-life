@@ -10,24 +10,24 @@ from copy import deepcopy
 
 
 class Grid:
-    """Create a NxN grid of cells. True == ALIVE, False == DEAD"""
+    '''Create a NxN grid of cells. True == ALIVE, False == DEAD'''
     def __init__(self, n):
         self._length = n # num cells in each row/column
         self._cells = []
 
         values = [True, False]
-        weights = [0.25, 0.75]
+        weights = [0.20, 0.80]
 
         for x in range(self._length):
             self._cells.append([])
             for _ in range(self._length):
                 self._cells[x].append(choice(values, p=weights))
 
-    """Return the current state of the cell located at (x,y)."""
+    '''Return the current state of the cell located at (x,y).'''
     def cell(self, x, y):
         return self._cells[x][y]
 
-    """Update the state of the grid."""
+    '''Update the state of the grid.'''
     def update(self):
         self._new_cells = deepcopy(self._cells)
         self._changed_cells = [] # list of (x, y) tuples
@@ -37,7 +37,7 @@ class Grid:
         self._cells = self._new_cells
         return self._changed_cells
 
-    """Update the state of each cell based on the game's rules."""
+    '''Update the state of each cell based on the game's rules.'''
     def _update_cells(self):
         for x in range(self._length):
             for y in range(self._length):
@@ -48,12 +48,12 @@ class Grid:
                 elif lives == 3:
                     self._switch_cell(x, y)
     
-    """Flip the current state of the cell and record the change."""
+    '''Flip the current state of the cell and record the change.'''
     def _switch_cell(self, x, y):
         self._new_cells[x][y] = not self.cell(x, y)
         self._changed_cells.append((x, y))
 
-    """Count the number of live neighbors for cell at (x,y)."""
+    '''Count the number of live neighbors for cell at (x,y).'''
     def _count_live_neighbors(self, x, y):
         top = (x - 1) % self._length
         left = (y - 1) % self._length
@@ -75,7 +75,7 @@ class Grid:
 
 class App:
     def __init__(self):
-        self._COLOR_ALIVE = 'green'
+        self._COLOR_ALIVE = 'orange'
         self._COLOR_DEAD = 'black'
 
         self._n = 50 # num cells in each row/column
@@ -84,26 +84,26 @@ class App:
 
         self._grid = Grid(self._n)
 
-    """Initialize the window and start the main event loop."""
+    '''Initialize the window and start the main event loop.'''
     def main(self):
         self._create_window()
         self._draw_grid()
 
         self._root.mainloop()
     
-    """Create the window, canvas, and play/pause button."""
+    '''Create the window, canvas, and play/pause button.'''
     def _create_window(self):
         self._root = tkinter.Tk()
-        self._root.title("Conway\'s Game of Life")
+        self._root.title("Conway's Game of Life")
 
         sz = self._n * self._cell_size_in_pixels
         self._canvas = tkinter.Canvas(self._root, width=sz, height=sz)
         self._canvas.pack()
         
-        self._btn = tkinter.Button(self._root, text="Play", command=self._play)
-        self._btn.pack(expand=tkinter.YES, fill=tkinter.BOTH)
+        self._btn = tkinter.Button(self._root, text='Play', command=self._play)
+        self._btn.pack()
 
-    """Draw the initial state of the grid to the canvas."""
+    '''Draw the initial state of the grid to the canvas.'''
     def _draw_grid(self):
         for x in range(self._n):
             for y in range(self._n):
@@ -117,9 +117,9 @@ class App:
                     color = self._COLOR_DEAD
                 self._canvas.create_rectangle(x0, y0, x1, y1, fill=color)
 
-    """Start the game."""
+    '''Start the game.'''
     def _play(self):
-        self._current_job = self._root.after(500, self._play)
+        self._current_job = self._root.after(250, self._play)
         self._btn.config(text='Pause', command=self._pause)
 
         updated_cells = self._grid.update()
@@ -131,11 +131,10 @@ class App:
             else:
                 self._canvas.itemconfig(id, fill=self._COLOR_DEAD)
 
-    """Stop the game."""
+    '''Stop the game.'''
     def _pause(self):
         self._root.after_cancel(self._current_job)
         self._btn.config(text='Play', command=self._play)
-        
 
 
 if __name__ == '__main__':
